@@ -1,0 +1,52 @@
+{
+  "component": {
+    "Button": {
+      "appearances": {
+        "filled": {
+          "mapping": {
+            "textFontFamily": "text-font-family"
+          }
+        }
+      }
+    }
+  },
+  "strict": {
+    "text-font-family": "Nunito-Regular",
+    "text-heading-1-font-size": 35,
+    "text-heading-1-font-weight": "600",
+    "text-heading-1-font-family": "Nunito-Bold",
+    "text-heading-2-font-size": 30,
+    "text-heading-2-font-weight": "600",
+    "text-heading-2-font-family": "Nunito-Bold",
+    "text-heading-3-font-size": 25,
+    "text-heading-3-font-weight": "600",
+    "text-heading-3-font-family": "Nunito-Bold",
+    "text-heading-4-font-size": 20,
+    "text-heading-4-font-weight": "600",
+    "text-heading-4-font-family": "Nunito-Bold",
+    "text-heading-5-font-size": 18,
+    "text-heading-5-font-weight": "600",
+    "text-heading-5-font-family": "Nunito-Bold",
+    "text-heading-6-font-size": 16,
+    "text-heading-6-font-weight": "600",
+    "text-heading-6-font-family": "Nunito-Bold",
+    "text-subtitle-1-font-size": 15,
+    "text-subtitle-1-font-weight": "500",
+    "text-subtitle-1-font-family": "Nunito-SemiBold",
+    "text-subtitle-2-font-size": 14,
+    "text-subtitle-2-font-weight": "500",
+    "text-subtitle-2-font-family": "Nunito-SemiBold",
+    "text-paragraph-1-font-size": 15,
+    "text-paragraph-1-font-weight": "400",
+    "text-paragraph-1-font-family": "Nunito-Regular",
+    "text-paragraph-2-font-size": 14,
+    "text-paragraph-2-font-weight": "400",
+    "text-paragraph-2-font-family": "Nunito-Regular",
+    "text-caption-1-font-size": 12,
+    "text-caption-1-font-weight": "400",
+    "text-caption-1-font-family": "Nunito-Regular",
+    "text-label-font-size": 12,
+    "text-label-font-weight": "600",
+    "text-label-font-family": "Nunito-Bold"
+  }
+}

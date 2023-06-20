@@ -11,7 +11,6 @@ npm-debug.*
 web-build/
 android/
 ios/
-assets/
 GoogleService-Info.plist
 google-services.json
 # macOS

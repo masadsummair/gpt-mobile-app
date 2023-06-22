@@ -2,10 +2,11 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import firestore from '@react-native-firebase/firestore';
 import { appSlice } from '../slices/AppSlice';
 import generateUniqueId from '../../helper/GenerateUniqueId';
+import { chatApi } from '../../api/chat';
 
 export const askQuestion = createAsyncThunk(
     'chatSlice/askQuestion',
-    async ({question,index}, { signal,rejectWithValue, dispatch, getState }) => {
+    async ({ question, index }, { signal, rejectWithValue, dispatch, getState }) => {
         try {
             const { chatSlice: { chat }, userSlice: { user } } = getState();
             let context = [];
@@ -29,29 +30,19 @@ export const askQuestion = createAsyncThunk(
 
             }
             context.push({ "role": "user", "content": `${question}.` })
-            const response = await fetch("https://lenania.com/api/generate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ prompt: context }),
-                signal
-            });
-
-            const result = await response.json();
-            if (!response.ok) throw ("")
-
+            const { status, result,error } = await chatApi.Generate(context, signal)
+            if (!status) throw (error)
             if (chat[index][1].slice(0, -2).length == 0) {
 
                 const threat = await firestore().collection('chat').doc(user.id).collection("threat").add({
-                    chatMessages: [{ type: "question", message: question }, { type: "answer", message: result.result+"\nIf you are not happy with the answer, try to give more details. I am still learning and improving with every user feedback. Thank you for your kind patience 😀", like: true }],
+                    chatMessages: [{ type: "question", message: question }, { type: "answer", message: result + "\nIf you are not happy with the answer, try to give more details. I am still learning and improving with every user feedback. Thank you for your kind patience 😀", like: true }],
                     createdAt: new Date(),
                 });
                 return {
                     new: true,
                     id: threat.id,
                     index,
-                    answer: result.result +"\nIf you are not happy with the answer, try to give more details. I am still learning and improving with every user feedback. Thank you for your kind patience 😀"
+                    answer: result + "\nIf you are not happy with the answer, try to give more details. I am still learning and improving with every user feedback. Thank you for your kind patience 😀"
                 }
             } else {
                 await firestore().collection('chat').doc(user.id).collection("threat").doc(chat[index][0].id).set({
@@ -67,12 +58,11 @@ export const askQuestion = createAsyncThunk(
 
         } catch (error) {
             console.log(error)
-            if(error.name === 'AbortError')
-            {
+            if (error.name === 'AbortError') {
                 return rejectWithValue('cancelled');
             }
             let message = `We're experiencing exceptionally high demand. Please hang tight as we work on scaling our systems.`;
-            dispatch(appSlice.actions.setAlert({ message,mode:"warning" }));
+            dispatch(appSlice.actions.setAlert({ message, mode: "warning" }));
             return rejectWithValue('Something went worng');
         }
     },
@@ -83,7 +73,7 @@ export const initChats = createAsyncThunk(
     async (_, { rejectWithValue, dispatch, getState }) => {
         try {
             const { userSlice: { user } } = getState();
-            const chats = await firestore().collection("chat").doc(user.id).collection("threat").orderBy("createdAt","asc").get();
+            const chats = await firestore().collection("chat").doc(user.id).collection("threat").orderBy("createdAt", "asc").get();
             if (chats) {
                 let tempChat = [];
                 chats.docs.map((item) => {
@@ -96,7 +86,7 @@ export const initChats = createAsyncThunk(
 
             let message = 'Something went wrong!';
             dispatch(appSlice.actions.setAlert({ message }));
-            return rejectWithValue({index});
+            return rejectWithValue({ index });
         }
     },
 );

@@ -24,6 +24,8 @@ import { openInbox } from "react-native-email-link";
 import auth from '@react-native-firebase/auth';
 import { appSlice } from '../store/slices/AppSlice';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { userSlice } from '../store/slices/UserSlice';
+import { userApi } from '../api/user';
 
 export default function Chat({ route }) {
   const { chat, isTyping, selectedThreat } = useSelector(({ chatSlice }) =>
@@ -47,10 +49,16 @@ export default function Chat({ route }) {
       return;
     }
 
-    if (!user.emailVerified || !await checkEmailVerified()) {
-      setVisible(true);
-      return;
+    if (!user.emailVerified) {
+      const emailVerifiedStatus = await checkEmailVerified();
+      if (emailVerifiedStatus) {
+        dispatch(userSlice.actions.updateEmailVerifiedStatus());
+      } else {
+        setVisible(true);
+        return;
+      }
     }
+
 
     const questionToSend = message || question;
     if (!questionToSend || questionToSend.length === 0) {
@@ -81,20 +89,22 @@ export default function Chat({ route }) {
   }, [])
 
   const checkEmailVerified = async () => {
-    const emailVerified = await new Promise(resolve => {
-      const unsubscribe = auth().onAuthStateChanged(async (data) => {
-        await data.reload()
-        unsubscribe();
-        resolve(data.emailVerified);
-      });
-    });
+    const user = auth().currentUser;
 
-    return emailVerified;
+    if (!user) {
+      return false;
+    }
+
+    await user.reload();
+
+    if (!user.emailVerified) {
+      await userApi.sendWelcomeEmail(user.email);
+    }
+
+    return user.emailVerified;
   }
   const StopQuestion = () => {
-    console.log(abortControllerRef.current)
     if (abortControllerRef.current) {
-      // Abort the current request
       abortControllerRef.current.abort();
     }
   }

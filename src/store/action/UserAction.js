@@ -3,7 +3,8 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { appSlice } from '../slices/AppSlice';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { openInbox } from "react-native-email-link";
+import { userApi } from '../../api/user';
+
 GoogleSignin.configure({
   webClientId: '1068878917959-qjst8gcag3t46nmsaeqhb5baid4l8lhi.apps.googleusercontent.com',
 });
@@ -91,20 +92,13 @@ export const register = createAsyncThunk(
           user: null
         };
       } else {
-        const response = await fetch('http://192.168.1.8:3000/api/sendVerificationEmail', {
-          method: 'POST',
-          body: JSON.stringify({
-            email: email, url, platform: "app"
-          })
-        })
-        const result = await response.json();
-        if (!result.ok) throw ("Email was not send")
+        await userApi.sendVerificationEmail(email,url);
         dispatch(appSlice.actions.setAlert({ message: "Check your email Inbox", mode: "sucess" }));
         await user.user.updateProfile({ displayName: firstName + " " + lastName });
         return {
           isAuthenticated: true,
           user: {
-            id: user.user.uid,emailVerified: user.emailVerified, firstname: firstName, lastname: lastName, email: email, verify: false
+            id: user.user.uid, emailVerified: user.emailVerified, firstname: firstName, lastname: lastName, email: email, verify: false
           }
         };
       }
@@ -138,21 +132,22 @@ export const googleSignIn = createAsyncThunk(
 
       // Sign-in the user with the credential
       const { user } = await auth().signInWithCredential(googleCredential);
-      const isExist = await firestore().collection('users').doc(user.uid).get();
-      if (isExist && user) {
+      const {exists} = await firestore().collection('users').doc(user.uid).get();
+      if (exists && user) {
         return {
           isAuthenticated: true,
           user: {
-            id: user.uid,emailVerified: user.emailVerified, firstname: user.displayName?.split(" ")[0], lastname: user.displayName?.split(" ")[1], email: user.email, ...isExist.data()
+            id: user.uid, emailVerified: user.emailVerified, firstname: user.displayName?.split(" ")[0], lastname: user.displayName?.split(" ")[1], email: user.email, ...isExist.data()
           }
         };
       }
       else if (user) {
+        await userApi.sendWelcomeEmail(user.email);
         await firestore().collection('users').doc(user.uid).set({ verify: false })
         return {
           isAuthenticated: true,
           user: {
-            id: user.uid,emailVerified: user.emailVerified, firstname: user.displayName?.split(" ")[0], lastname: user.displayName?.split(" ")[1], email: user.email, verify: false
+            id: user.uid, emailVerified: user.emailVerified, firstname: user.displayName?.split(" ")[0], lastname: user.displayName?.split(" ")[1], email: user.email, verify: false
           }
         };
       } else {
@@ -217,6 +212,10 @@ export const onboardingVerification = createAsyncThunk(
   }
 );
 
-const userActions = {};
+function updateEmailVerifiedStatus(state, action) {
+  state.user.emailVerified = true;
+}
+
+const userActions = { updateEmailVerifiedStatus };
 
 export default userActions;

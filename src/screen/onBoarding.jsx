@@ -9,6 +9,7 @@ import React from 'react';
 import Logo from "../../assets/logo.svg";
 import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
+import CustomButton from '../components/Button';
 
 
 
@@ -18,7 +19,7 @@ export default function OnBoarding({ navigation }) {
     <Layout style={Style.container} level="2">
       <View style={Style.header}>
         {/* <Image style={Style.logo} source={require('../../assets/logo.svg')} /> */}
-        <Logo  width={normalize(200)} height={normalize(60)} />
+        <Logo width={normalize(200)} height={normalize(60)} />
         <View style={Style.subSection}>
           <Text category="h2" style={Style.title}>
             Support every mom deserves
@@ -35,17 +36,17 @@ export default function OnBoarding({ navigation }) {
           <Image style={Style.nia} source={require('../../assets/nia.png')} />
         </View>
       </View>
-      <Button
+      <CustomButton
         onPress={() => {
           navigation.navigate('Login');
         }}
-        size="large"
-        accessoryRight={() => (<Icon style={Style.icon}
-          fill={Theme.color.white} name="arrow-forward-outline" />)}
-        style={Style.button}>
-        Continue
+        accessoryRight={<Icon style={Style.icon}
+          fill={Theme.color.white} name="arrow-forward-outline" />}
+        text="Continue"
+      />
 
-      </Button>
+
+
     </Layout>
   );
 }
@@ -60,8 +61,8 @@ const Style = StyleSheet.create({
   },
   logo: {},
   icon: {
-    width: normalize(26),
-    height: normalize(26),
+    width: normalize(24),
+    height: normalize(24),
   },
   header: {
     justifyContent: 'center',

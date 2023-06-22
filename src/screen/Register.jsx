@@ -1,15 +1,14 @@
-import { Button, Input, Layout, Text } from '@ui-kitten/components';
-import { Image, Keyboard, StyleSheet, View } from 'react-native';
+import { Input, Layout, Text } from '@ui-kitten/components';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import Theme from '../styles/Theme';
-import GoogleIcon from '../components/googleIcon';
 import { normalize } from '../styles/Style';
 import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
 import { register } from '../store/action/UserAction';
 import Logo from "../../assets/logo.svg";
-import * as Linking from 'expo-linking';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import CustomButton from '../components/Button';
 
 export default function Register({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -26,7 +25,7 @@ export default function Register({ navigation }) {
           packageName: 'com.lenania', // Replace with your Android app package name
         },
       });
-  
+
       return link;
     } catch (error) {
       console.error('Error generating deep link:', error);
@@ -42,8 +41,8 @@ export default function Register({ navigation }) {
     } else if (password.length < 6) {
       dispatch(appSlice.actions.setAlert({ message: 'Password to short' }));
     } else {
-      const url=await generateDeepLink();
-      dispatch(register({ firstName, lastName, email, password,url }));
+      const url = await generateDeepLink();
+      dispatch(register({ firstName, lastName, email, password, url }));
     }
   };
   const onGoogleButtonPress = async () => {
@@ -52,13 +51,13 @@ export default function Register({ navigation }) {
   return (
     <Layout style={Style.container} level="2">
       <View style={Style.header}>
-      <Logo width={normalize(200)} height={normalize(60)} />
+        {/* <Logo width={normalize(200)} height={normalize(60)} /> */}
         <View style={Style.subSection}>
-          <Text category="h1" style={Style.title}>
-            Register
+          <Text category="h2" style={Style.title}>
+            Connect with Moms like You
           </Text>
-          <Text appearance="hint">
-            Navigating being a Mom, one question at a time
+          <Text style={{ textAlign: "center" }} >
+            Join our community of mothers and get access to valuable resources and expert advice.
           </Text>
         </View>
       </View>
@@ -96,11 +95,10 @@ export default function Register({ navigation }) {
               secureTextEntry={true}
             />
           </View>
-          <Button
+          <CustomButton
             onPress={handlRegister}
-            style={Style.button}>
-            Register
-          </Button>
+            text="Register "
+          />
         </View>
         <View style={Style.lineSection}>
           <View style={Style.line} />
@@ -108,13 +106,14 @@ export default function Register({ navigation }) {
           <View style={Style.line} />
         </View>
         <View style={Style.footer}>
-          <Button
-            accessoryLeft={GoogleIcon}
-            status="basic"
-            style={Style.googleButton}
-            onPress={onGoogleButtonPress}>
-            Sign in with Google
-          </Button>
+          <CustomButton
+            onPress={onGoogleButtonPress}
+            text="Sign in with Google"
+            GoogleIconLeft={true}
+            backgroundColor={Theme.color.white}
+            color={Theme.color.darkGray}
+            fontSize={16}
+          />
           <View style={Style.reDirectSignUp}>
             <Text appearance="hint">Already have an account? </Text>
             <Text
@@ -137,6 +136,7 @@ const Style = StyleSheet.create({
     paddingTop: normalize(20),
     flexDirection: 'column',
     gap: normalize(50),
+    justifyContent: "center"
   },
   logo: {},
   header: {
@@ -144,7 +144,7 @@ const Style = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     flexDirection: 'column',
-    gap: normalize(30),
+    gap: normalize(20),
   },
   body: {
     justifyContent: 'center',
@@ -166,6 +166,9 @@ const Style = StyleSheet.create({
   },
   title: {
     color: Theme.color.MediumBlack,
+    textAlign: "center",
+    paddingBottom: 5,
+    paddingHorizontal:normalize(40)
   },
   inputGroup: {
     width: '90%',

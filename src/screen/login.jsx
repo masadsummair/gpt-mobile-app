@@ -1,5 +1,5 @@
 import { Button, Input, Layout, Text } from '@ui-kitten/components';
-import { Image, StyleSheet, View,Text as RText, Keyboard } from 'react-native';
+import { Image, StyleSheet, View, Text as RText, Keyboard } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Theme from '../styles/Theme';
 import GoogleIcon from '../components/googleIcon';
@@ -8,6 +8,7 @@ import { googleSignIn, login } from '../store/action/UserAction';
 import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
 import Logo from "../../assets/logo.svg";
+import CustomButton from '../components/Button';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -29,12 +30,12 @@ export default function Login({ navigation }) {
   return (
     <Layout style={Style.container} level="2">
       <View style={Style.header}>
-        <Logo width={normalize(200)} height={normalize(60)} />
+        {/* <Logo width={normalize(200)} height={normalize(60)} /> */}
         <View style={Style.subSection}>
-          <Text category="h1" style={Style.title}>
-            Login
+          <Text category="h2" style={Style.title}>
+            Discover the Journey of Motherhood
           </Text>
-          <Text appearance="hint">Empowering Moms through dialogue</Text>
+          <Text style={{ textAlign: "center" }} >Our experienced midwives are here to provide support, answer your questions, and offer advice every step of the way.</Text>
         </View>
       </View>
       <View style={Style.body}>
@@ -57,7 +58,10 @@ export default function Login({ navigation }) {
               secureTextEntry={true}
             />
           </View>
-          <Button onPress={handleLogin} style={Style.button}>Login</Button>
+          <CustomButton
+            onPress={handleLogin}
+            text="Login "
+          />
         </View>
         <View style={Style.lineSection}>
           <View style={Style.line} />
@@ -65,15 +69,14 @@ export default function Login({ navigation }) {
           <View style={Style.line} />
         </View>
         <View style={Style.footer}>
-          <Button
-            accessoryLeft={GoogleIcon}
-            status="basic"
-            style={Style.googleButton}
-            textStyle={Style.buttonText} 
-            onPress={onGoogleButtonPress}>
-
-            <RText style={Style.buttonText} >Sign in with Google</RText>
-          </Button>
+          <CustomButton
+            onPress={onGoogleButtonPress}
+            text="Sign in with Google"
+            GoogleIconLeft={true}
+            backgroundColor={Theme.color.white}
+            color={Theme.color.darkGray}
+            fontSize={16}
+          />
           <View style={Style.reDirectSignUp}>
             <Text appearance="hint">Don't have an account? </Text>
             <Text
@@ -96,6 +99,7 @@ const Style = StyleSheet.create({
     paddingTop: normalize(20),
     flexDirection: 'column',
     gap: normalize(60),
+    justifyContent:"center"
   },
   logo: {},
   header: {
@@ -103,7 +107,7 @@ const Style = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     flexDirection: 'column',
-    gap: normalize(30),
+    gap: normalize(20),
   },
   body: {
     justifyContent: 'center',
@@ -125,6 +129,8 @@ const Style = StyleSheet.create({
   },
   title: {
     color: Theme.color.MediumBlack,
+    textAlign: "center",
+    paddingBottom: 5
   },
   inputGroup: {
     width: '90%',
@@ -167,11 +173,11 @@ const Style = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 0,
     color: Theme.color.darkGray,
-    fontFamily:"Nunito-Regular"
+    fontFamily: "Nunito-Regular"
   },
-  buttonText:{
-    fontFamily:"Nunito-Bold",
-    
+  buttonText: {
+    fontFamily: "Nunito-Bold",
+
   },
   reDirectSignUp: {
     flexDirection: 'row',

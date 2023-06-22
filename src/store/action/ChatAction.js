@@ -46,13 +46,13 @@ export const askQuestion = createAsyncThunk(
                 }
             } else {
                 await firestore().collection('chat').doc(user.id).collection("threat").doc(chat[index][0].id).set({
-                    chatMessages: [...chat[index][1].slice(0, -2), { type: "question", message: question }, { type: "answer", message: result.result, like: true }],
+                    chatMessages: [...chat[index][1].slice(0, -2), { type: "question", message: question }, { type: "answer", message: result, like: true }],
                     createdAt: new Date(),
                 });
                 return {
                     new: false,
                     index,
-                    answer: result.result
+                    answer: result
                 }
             }
 

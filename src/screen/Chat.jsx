@@ -1,8 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
   Icon,
-  IconElement,
-  IconProps,
   Input,
   Layout,
   Text,
@@ -18,7 +16,6 @@ import { View } from 'react-native';
 import Theme from '../styles/Theme';
 import { useDispatch, useSelector } from 'react-redux';
 import { TypingAnimation } from 'react-native-typing-animation';
-import { chatSlice } from '../store/slices/ChatSlice';
 import { askQuestion } from '../store/action/ChatAction';
 import { openInbox } from "react-native-email-link";
 import auth from '@react-native-firebase/auth';
@@ -26,6 +23,7 @@ import { appSlice } from '../store/slices/AppSlice';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { userSlice } from '../store/slices/UserSlice';
 import { userApi } from '../api/user';
+import { generateDeepLink } from '../helper/generateDeepLink';
 
 export default function Chat({ route }) {
   const { chat, isTyping, selectedThreat } = useSelector(({ chatSlice }) =>
@@ -40,6 +38,10 @@ export default function Chat({ route }) {
   const dispatch = useDispatch();
   const chatRef = useRef();
   const handleNewMessage = async (message) => {
+    if(!user || visible)
+    {
+      return;
+    }
     Keyboard.dismiss();
     if (isTyping) {
       dispatch(appSlice.actions.setAlert({
@@ -94,11 +96,12 @@ export default function Chat({ route }) {
     if (!user) {
       return false;
     }
-
+    const previousEmailVerifiedStatus=user.emailVerified;
     await user.reload();
 
-    if (!user.emailVerified) {
-      await userApi.sendWelcomeEmail(user.email);
+    if (!previousEmailVerifiedStatus && user.emailVerified) {
+      const url = await generateDeepLink();
+      await userApi.sendWelcomeEmail(user.email, url);
     }
 
     return user.emailVerified;

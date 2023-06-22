@@ -5,10 +5,9 @@ import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
 import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
-import { register } from '../store/action/UserAction';
-import Logo from "../../assets/logo.svg";
-import dynamicLinks from '@react-native-firebase/dynamic-links';
+import { googleSignIn, register } from '../store/action/UserAction';
 import CustomButton from '../components/Button';
+import { generateDeepLink } from '../helper/generateDeepLink';
 
 export default function Register({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -16,22 +15,6 @@ export default function Register({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const generateDeepLink = async () => {
-    try {
-      const link = await dynamicLinks().buildShortLink({
-        link: 'https://lenania.com', // Replace with your web app confirmation URL
-        domainUriPrefix: 'https://lenania.page.link', // Replace with your Firebase Dynamic Links domain URI prefix
-        android: {
-          packageName: 'com.lenania', // Replace with your Android app package name
-        },
-      });
-
-      return link;
-    } catch (error) {
-      console.error('Error generating deep link:', error);
-      return null;
-    }
-  };
   const handlRegister = async () => {
     Keyboard.dismiss();
     if (firstName.length <= 0 || lastName.length <= 0) {
@@ -46,7 +29,8 @@ export default function Register({ navigation }) {
     }
   };
   const onGoogleButtonPress = async () => {
-    dispatch(googleSignIn());
+    const url = await generateDeepLink();
+    dispatch(googleSignIn({ url }));
   }
   return (
     <Layout style={Style.container} level="2">
@@ -168,7 +152,7 @@ const Style = StyleSheet.create({
     color: Theme.color.MediumBlack,
     textAlign: "center",
     paddingBottom: 5,
-    paddingHorizontal:normalize(40)
+    paddingHorizontal: normalize(40)
   },
   inputGroup: {
     width: '90%',

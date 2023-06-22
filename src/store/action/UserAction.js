@@ -121,7 +121,7 @@ export const register = createAsyncThunk(
 
 export const googleSignIn = createAsyncThunk(
   'userSlice/googleSignIn',
-  async (_, { rejectWithValue, dispatch }) => {
+  async ({url}, { rejectWithValue, dispatch }) => {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       // Get the users ID token
@@ -142,7 +142,7 @@ export const googleSignIn = createAsyncThunk(
         };
       }
       else if (user) {
-        await userApi.sendWelcomeEmail(user.email);
+        await userApi.sendWelcomeEmail(user.email,url);
         await firestore().collection('users').doc(user.uid).set({ verify: false })
         return {
           isAuthenticated: true,

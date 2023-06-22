@@ -1,12 +1,12 @@
 import { API_URL } from "../utils/constant";
 
 
-async function sendWelcomeEmail(email) {
+async function sendWelcomeEmail(email, url) {
     try {
         const response = await fetch(API_URL + '/sendWelcomeEmail', {
             method: 'POST',
             body: JSON.stringify({
-                email
+                email, url
             })
         })
         const result = await response.json();

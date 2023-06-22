@@ -53,7 +53,7 @@ const Style = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     paddingHorizontal: normalize(15),
-    paddingTop: normalize(35),
+    paddingTop: normalize(25),
     backgroundColor: Theme.color.secondary,
   },
 });

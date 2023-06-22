@@ -1,14 +1,13 @@
-import { Button, Input, Layout, Text } from '@ui-kitten/components';
-import { Image, StyleSheet, View, Text as RText, Keyboard } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { Input, Layout, Text } from '@ui-kitten/components';
+import { StyleSheet, View, Text as RText, Keyboard } from 'react-native';
+import React, { useState } from 'react';
 import Theme from '../styles/Theme';
-import GoogleIcon from '../components/googleIcon';
 import { normalize } from '../styles/Style';
 import { googleSignIn, login } from '../store/action/UserAction';
 import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
-import Logo from "../../assets/logo.svg";
 import CustomButton from '../components/Button';
+import { generateDeepLink } from '../helper/generateDeepLink';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -25,7 +24,8 @@ export default function Login({ navigation }) {
     }
   }
   const onGoogleButtonPress = async () => {
-    dispatch(googleSignIn());
+    const url = await generateDeepLink();
+    dispatch(googleSignIn({ url }));
   }
   return (
     <Layout style={Style.container} level="2">
@@ -99,7 +99,7 @@ const Style = StyleSheet.create({
     paddingTop: normalize(20),
     flexDirection: 'column',
     gap: normalize(60),
-    justifyContent:"center"
+    justifyContent: "center"
   },
   logo: {},
   header: {

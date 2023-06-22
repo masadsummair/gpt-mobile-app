@@ -13,5 +13,8 @@ export default {
     YellowLite: '#FFF9DB',
     red: '#FF8A8A',
     redLite: '#FFD8D8',
+    Green: "#0DCDAA",
+    GreenLite: '#A8EADE',
+    GreenLiteLight: "#E9FBF8",
   },
 };

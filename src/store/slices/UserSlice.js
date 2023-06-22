@@ -18,11 +18,9 @@ export const userSlice = createSlice({
             state.loading = true;
         });
         builder.addCase(getToken.fulfilled, (state, action) => {
-            console.log(action)
             state.loading = false;
             state.isAuthenticated = action.payload.isAuthenticated;
             state.user = action.payload.user;
-            console.log("as",action.payload.user)
         });
         builder.addCase(getToken.rejected, (state) => {
             state.loading = false;
@@ -34,7 +32,6 @@ export const userSlice = createSlice({
             state.loading = false;
             state.isAuthenticated = action.payload.isAuthenticated;
             state.user = action.payload.user;
-            console.log(action.payload.user)
         });
         builder.addCase(login.rejected, (state) => {
             state.loading = false;
@@ -46,7 +43,7 @@ export const userSlice = createSlice({
             state.loading = false;
             state.isAuthenticated = action.payload.isAuthenticated;
             state.user = action.payload.user;
-            console.log(action.payload.user)
+
         });
         builder.addCase(register.rejected, (state) => {
             state.loading = false;

@@ -14,11 +14,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Welcome from '../screen/Welcome';
 import { initChats } from '../store/action/ChatAction';
 
+
 const Drawer = createDrawerNavigator();
 function DrawerNavigation() {
   const navigationState = useNavigationState((state) => state);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (navigationState && navigationState.history) {
       setIsDrawerOpen(
@@ -31,7 +32,10 @@ function DrawerNavigation() {
   const chat = useSelector(({ chatSlice }) => chatSlice);
   useEffect(() => {
     dispatch(initChats());
+
   }, []);
+
+
   return (
     <>
       <StatusBar
@@ -105,11 +109,9 @@ export default function Home() {
   const { verify } = useSelector(({ userSlice }) =>
     userSlice.user,
   );
-  if (verify)
-  {
-    return (<DrawerNavigation/>);
-  }else
-  {
+  if (verify) {
+    return (<DrawerNavigation />);
+  } else {
     return <WelcomeStack />
   }
 }

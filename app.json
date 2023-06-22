@@ -2,6 +2,7 @@
   "expo": {
     "name": "lenania",
     "slug": "lenania",
+    "scheme": "lenania",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/lena.png",
@@ -31,7 +32,8 @@
     },
     "plugins": [
       "@react-native-firebase/app",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "react-native-email-link"
     ],
     "extra": {
       "eas": {

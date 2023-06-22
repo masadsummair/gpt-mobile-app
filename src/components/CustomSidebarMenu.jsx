@@ -12,18 +12,22 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import {Icon, Text} from '@ui-kitten/components';
+import { Icon, Text } from '@ui-kitten/components';
 import Theme from '../styles/Theme';
-import {normalize} from '../styles/Style';
-import {useDispatch, useSelector} from 'react-redux';
+import { normalize } from '../styles/Style';
+import { useDispatch, useSelector } from 'react-redux';
 import { chatSlice } from '../store/slices/ChatSlice';
 import Logo from "../../assets/logo-white.svg";
-export default function CustomSidebarMenu({navigation, ...props}) {
+import { logout } from '../store/action/UserAction';
+export default function CustomSidebarMenu({ navigation, ...props }) {
   const toggleDrawer = () => {
     navigation.toggleDrawer();
   };
-  const dispatch=useDispatch();
-  const {chat} = useSelector(({chatSlice}) => chatSlice);
+  const dispatch = useDispatch();
+  const { chat } = useSelector(({ chatSlice }) => chatSlice);
+  const handleLogOut = async () => {
+    dispatch(logout());
+  }
   return (
     <DrawerContentScrollView>
       <View style={Style.header}>
@@ -38,27 +42,13 @@ export default function CustomSidebarMenu({navigation, ...props}) {
       </View>
 
       <DrawerContentScrollView style={Style.Threats}>
-        {/* {chat.map((item: any, index: number) => {
-          const {descriptors} = props;
-          const route = descriptors[`${Object.keys(descriptors)}`].route;
-          console.log(route);
-          return (
-            <DrawerItem
-              key={route.key}
-              label="this chat"
-              onPress={() => {
-                navigation.navigate(route.name, {chatIndex: index});
-              }}
-            />
-          );
-        })} */}
         {chat.map((item, index) => {
           const route = 'chat-' + index;
           return (
             <DrawerItem
               key={route}
               style={Style.ChatDrawer}
-              label={({focused}) => (
+              label={({ focused }) => (
                 <View style={Style.ChatDrawerItem}>
                   <Icon
                     style={Style.Icon}
@@ -74,7 +64,7 @@ export default function CustomSidebarMenu({navigation, ...props}) {
               )}
               onPress={() => {
                 dispatch(chatSlice.actions.setSelectedThreat(index))
-                navigation.navigate(route, {index});
+                navigation.navigate(route, { index });
               }}
             />
           );
@@ -82,23 +72,6 @@ export default function CustomSidebarMenu({navigation, ...props}) {
       </DrawerContentScrollView>
 
       <View style={Style.line} />
-
-      <DrawerItem
-        style={Style.BottomDrawer}
-        label={() => (
-          <View style={Style.BottomDrawerItem}>
-            <Icon
-              style={Style.Icon}
-              fill={Theme.color.secondary}
-              name="settings"
-            />
-            <Text style={Style.BottomDrawerText}>Setting</Text>
-          </View>
-        )}
-        onPress={() => {
-          navigation.navigate('Setting');
-        }}
-      />
       <DrawerItem
         style={Style.BottomDrawer}
         label={() => (
@@ -126,6 +99,20 @@ export default function CustomSidebarMenu({navigation, ...props}) {
           </View>
         )}
         onPress={() => Linking.openURL('https://lenania.com/contact')}
+      />
+      <DrawerItem
+        style={Style.BottomDrawer}
+        label={() => (
+          <View style={Style.BottomDrawerItem}>
+            <Icon
+              style={Style.Icon}
+              fill={Theme.color.secondary}
+              name="log-out-outline"
+            />
+            <Text style={Style.BottomDrawerText}>Log out</Text>
+          </View>
+        )}
+        onPress={handleLogOut}
       />
     </DrawerContentScrollView>
   );

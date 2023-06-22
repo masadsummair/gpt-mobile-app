@@ -7,7 +7,7 @@ import {default as theme} from './theme.json';
 import {default as mapping} from './mapping.json';
 import uiKittenMappingForAndroid from './src/helper/uiKittenMappingForAndroid';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native';
+import { SafeAreaView} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Style, { normalize } from './src/styles/Style';
 import {Provider} from 'react-redux';
@@ -19,11 +19,9 @@ import { Logs } from 'expo'
 Logs.enableExpoCliLogging()
 export default () => {
   const isLoadingComplete = useFont();
-
   if (!isLoadingComplete) {
     return null;
   } 
-
   return (
   <GestureHandlerRootView style={Style.container}>
     <SafeAreaView edges={['top', 'left', 'right']} style={Style.container}>
@@ -35,7 +33,7 @@ export default () => {
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider
         {...eva}
-        customMapping={{...eva.mapping, ...mapping}}
+        customMapping={{...eva.mapping, ...uiKittenMappingForAndroid(mapping)}}
         theme={{...eva.light, ...theme}}>
         <Provider store={store}>
           <MainApp />

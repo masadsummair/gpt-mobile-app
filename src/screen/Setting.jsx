@@ -36,14 +36,6 @@ export default function Setting() {
             name="arrow-ios-forward-outline"
           />
         </TouchableOpacity>
-        <TouchableOpacity style={Style.card} >
-          <Text>Delete Account</Text>
-          <Icon
-            style={Style.icon}
-            fill={Theme.color.MediumBlack}
-            name="arrow-ios-forward-outline"
-          />
-        </TouchableOpacity>
         <TouchableOpacity style={Style.card} onPress={handleLogOut} >
           <Text >Log out</Text>
           <Icon

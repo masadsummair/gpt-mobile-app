@@ -25,7 +25,7 @@ export default function Welcome({ navigation }) {
     expert: 'lena',
   });
   const dispatch = useDispatch();
-  const { firstname,lastname } = useSelector(({ userSlice }) =>
+  const { firstname, lastname } = useSelector(({ userSlice }) =>
     userSlice.user,
   );
   const handleStart = async () => {
@@ -35,7 +35,7 @@ export default function Welcome({ navigation }) {
     } else {
       question2 = `birthdate of my child is ${dob.toDateString()}`;
     }
-    dispatch(onboardingVerification({...welcomeInfo,question2}))
+    dispatch(onboardingVerification({ ...welcomeInfo, question2 }))
   }
   return (
     <Layout style={Style.container} level="2">
@@ -43,7 +43,7 @@ export default function Welcome({ navigation }) {
       <View style={Style.section}>
         {option === 0 && (
           <Text category="h3" style={Style.text}>
-            Welcome {"\n"} {firstname+" "+lastname}
+            Welcome {"\n"} {firstname ? firstname : "" + " " + lastname ? lastname : ""}
           </Text>
         )}
 
@@ -195,7 +195,7 @@ export default function Welcome({ navigation }) {
               <Text
                 category="c2"
                 style={{ fontSize: normalize(26), textAlign: 'center' }}>
-                Hi {firstname+" "+lastname},Nice to meet you!
+                Hi {firstname ? firstname : ""  + " " + lastname ? lastname : "" },Nice to meet you!
               </Text>
               <Button
                 onPress={handleStart}
@@ -265,7 +265,7 @@ const Style = StyleSheet.create({
   text: {
     // fontSize: normalize(16),
     textAlign: 'center',
-    paddingHorizontal:normalize(10)
+    paddingHorizontal: normalize(10)
   },
   card: {
     borderRadius: 10,

@@ -1,6 +1,6 @@
 import { Button, Input, Layout, Text } from '@ui-kitten/components';
-import { Image, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import { Image, StyleSheet, View,Text as RText, Keyboard } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Theme from '../styles/Theme';
 import GoogleIcon from '../components/googleIcon';
 import { normalize } from '../styles/Style';
@@ -9,12 +9,12 @@ import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
 import Logo from "../../assets/logo.svg";
 
-
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const handleLogin = async () => {
+    Keyboard.dismiss();
     if (email.length <= 0) {
       dispatch(appSlice.actions.setAlert({ message: 'Please Enter Email' }));
     } else if (password.length < 6) {
@@ -69,9 +69,10 @@ export default function Login({ navigation }) {
             accessoryLeft={GoogleIcon}
             status="basic"
             style={Style.googleButton}
+            textStyle={Style.buttonText} 
             onPress={onGoogleButtonPress}>
 
-            Sign in with Google
+            <RText style={Style.buttonText} >Sign in with Google</RText>
           </Button>
           <View style={Style.reDirectSignUp}>
             <Text appearance="hint">Don't have an account? </Text>
@@ -166,6 +167,11 @@ const Style = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 0,
     color: Theme.color.darkGray,
+    fontFamily:"Nunito-Regular"
+  },
+  buttonText:{
+    fontFamily:"Nunito-Bold",
+    
   },
   reDirectSignUp: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 function setAlert(state, {payload}) {
-  console.log(payload)
+
   state.alert = true;
   state.alertMessage = payload.message;
   state.mode = payload.mode?payload.mode:"danger";

@@ -1,5 +1,5 @@
 import { Button, Input, Layout, Text } from '@ui-kitten/components';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Keyboard, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import Theme from '../styles/Theme';
 import GoogleIcon from '../components/googleIcon';
@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
 import { register } from '../store/action/UserAction';
 import Logo from "../../assets/logo.svg";
+import * as Linking from 'expo-linking';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 export default function Register({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -15,7 +17,24 @@ export default function Register({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const generateDeepLink = async () => {
+    try {
+      const link = await dynamicLinks().buildShortLink({
+        link: 'https://lenania.com', // Replace with your web app confirmation URL
+        domainUriPrefix: 'https://lenania.page.link', // Replace with your Firebase Dynamic Links domain URI prefix
+        android: {
+          packageName: 'com.lenania', // Replace with your Android app package name
+        },
+      });
+  
+      return link;
+    } catch (error) {
+      console.error('Error generating deep link:', error);
+      return null;
+    }
+  };
   const handlRegister = async () => {
+    Keyboard.dismiss();
     if (firstName.length <= 0 || lastName.length <= 0) {
       dispatch(appSlice.actions.setAlert({ message: 'Please Enter Name' }));
     } else if (email.length <= 0) {
@@ -23,9 +42,13 @@ export default function Register({ navigation }) {
     } else if (password.length < 6) {
       dispatch(appSlice.actions.setAlert({ message: 'Password to short' }));
     } else {
-      dispatch(register({ firstName, lastName, email, password }));
+      const url=await generateDeepLink();
+      dispatch(register({ firstName, lastName, email, password,url }));
     }
   };
+  const onGoogleButtonPress = async () => {
+    dispatch(googleSignIn());
+  }
   return (
     <Layout style={Style.container} level="2">
       <View style={Style.header}>
@@ -88,7 +111,8 @@ export default function Register({ navigation }) {
           <Button
             accessoryLeft={GoogleIcon}
             status="basic"
-            style={Style.googleButton}>
+            style={Style.googleButton}
+            onPress={onGoogleButtonPress}>
             Sign in with Google
           </Button>
           <View style={Style.reDirectSignUp}>

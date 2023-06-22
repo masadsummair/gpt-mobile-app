@@ -32,13 +32,13 @@ function Alert() {
               ? Theme.color.redLite
               : mode === 'warning'
               ? Theme.color.YellowLite
-              : Theme.color.primaryLiteLight,
+              : Theme.color.GreenLiteLight,
           borderColor:
             mode === 'danger'
               ? Theme.color.red
               : mode === 'warning'
               ? Theme.color.Yellow
-              : Theme.color.primary,
+              : Theme.color.Green,
         },
       ]}
       entering={ZoomInEasyUp}
@@ -52,7 +52,7 @@ function Alert() {
                 ? Theme.color.red
                 : mode === 'warning'
                 ? Theme.color.Yellow
-                : Theme.color.primary,
+                : Theme.color.Green,
           },
         ]}>
         {alertMessage + ' '}

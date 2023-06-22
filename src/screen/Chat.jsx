@@ -6,6 +6,9 @@ import {
   Input,
   Layout,
   Text,
+  Modal,
+  Card,
+  Button
 } from '@ui-kitten/components';
 import { FlatList, Keyboard, Pressable, ScrollView, StyleSheet } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
@@ -17,42 +20,87 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TypingAnimation } from 'react-native-typing-animation';
 import { chatSlice } from '../store/slices/ChatSlice';
 import { askQuestion } from '../store/action/ChatAction';
+import { openInbox } from "react-native-email-link";
+import auth from '@react-native-firebase/auth';
+import { appSlice } from '../store/slices/AppSlice';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function Chat({ route }) {
-  console.log(route)
-  const { chat, isTyping } = useSelector(({ chatSlice }) =>
-    ({ chat: chatSlice.chat.find((item, index) => route.name === 'chat-' + index)[1], isTyping: chatSlice.isTyping })
+  const { chat, isTyping, selectedThreat } = useSelector(({ chatSlice }) =>
+    ({ chat: chatSlice.chat.find((item, index) => route.name === 'chat-' + index)[1], isTyping: chatSlice.isTyping, selectedThreat: chatSlice.selectedThreat })
   );
   const user = useSelector(({ userSlice }) =>
     userSlice.user
   );
-
+  const abortControllerRef = useRef(null);
+  const [visible, setVisible] = useState(false);
   const [question, setQuestion] = useState('');
   const dispatch = useDispatch();
-  const chatRef=useRef();
+  const chatRef = useRef();
   const handleNewMessage = async (message) => {
-    if(message.length>0)
-    {
-      dispatch(askQuestion(message))
-    }else
-   {
-    if (question.length <= 0 || isTyping) {
+    Keyboard.dismiss();
+    if (isTyping) {
+      dispatch(appSlice.actions.setAlert({
+        message: "Please wait a moment while I process your previous request. Once completed, I'll be ready to assist you with your new question.",
+        mode: "warning"
+      }));
       return;
     }
-    dispatch(askQuestion(question))
-   }
-   setQuestion("");
-   Keyboard.dismiss();
-   scrollTobBottom();
+
+    if (!user.emailVerified || !await checkEmailVerified()) {
+      setVisible(true);
+      return;
+    }
+
+    const questionToSend = message || question;
+    if (!questionToSend || questionToSend.length === 0) {
+      return;
+    }
+    abortControllerRef.current = dispatch(askQuestion({ question: questionToSend, index: selectedThreat }));
+    setQuestion("");
+
+    scrollTobBottom();
   };
+
   const scrollTobBottom = () => {
     chatRef.current?.scrollToEnd();
   };
-  useEffect(()=>{
+  const handleOpenEmail = () => {
+    openInbox({ title: `Login link sent to ${user.email}`, message: 'Open my mailbox' });
+    setVisible(false);
+  };
+  useEffect(() => {
     scrollTobBottom()
-  },[])
+
+    return () => {
+      if (abortControllerRef.current) {
+        // Abort the current request
+        abortControllerRef.current.abort();
+      }
+    }
+  }, [])
+
+  const checkEmailVerified = async () => {
+    const emailVerified = await new Promise(resolve => {
+      const unsubscribe = auth().onAuthStateChanged(async (data) => {
+        await data.reload()
+        unsubscribe();
+        resolve(data.emailVerified);
+      });
+    });
+
+    return emailVerified;
+  }
+  const StopQuestion = () => {
+    console.log(abortControllerRef.current)
+    if (abortControllerRef.current) {
+      // Abort the current request
+      abortControllerRef.current.abort();
+    }
+  }
   return (
     <Layout style={Style.container} level="2">
+
       {!chat || (chat && chat.length === 0) ? (
         <ScrollView style={{ flex: 1, width: '100%' }}>
           <View
@@ -94,19 +142,19 @@ export default function Chat({ route }) {
             <View
               style={{ flexDirection: 'column', alignItems: 'center', gap: 20 }}>
               <Text category="h2">Example</Text>
-              <Pressable  style={Style.card} onPress={()=>{handleNewMessage("I don’t have any energy. What should I do today?")}}>
+              <Pressable style={Style.card} onPress={() => { handleNewMessage("I don’t have any energy. What should I do today?") }}>
                 <Text style={{ textAlign: 'center' }}>
-                I don’t have any energy. What should I do today?
+                  I don’t have any energy. What should I do today?
                 </Text>
               </Pressable >
-              <Pressable  style={Style.card} onPress={()=>{handleNewMessage("Got any creative ideas for a 5 year old’s birthday?")}}>
+              <Pressable style={Style.card} onPress={() => { handleNewMessage("Got any creative ideas for a 5 year old’s birthday?") }}>
                 <Text style={{ textAlign: 'center' }}>
-                Got any creative ideas for a 5 year old’s birthday?
+                  Got any creative ideas for a 5 year old’s birthday?
                 </Text>
               </Pressable >
-              <Pressable  style={Style.card} onPress={()=>{handleNewMessage("Create a plan for a family trip to NYC for 10 days")}}>
+              <Pressable style={Style.card} onPress={() => { handleNewMessage("Create a plan for a family trip to NYC for 10 days") }}>
                 <Text style={{ textAlign: 'center' }}>
-                Create a plan for a family trip to NYC for 10 days
+                  Create a plan for a family trip to NYC for 10 days
                 </Text>
               </Pressable >
             </View>
@@ -136,9 +184,8 @@ export default function Chat({ route }) {
         <>
           {chat && <FlatList
             ref={chatRef}
-            inverted 
             style={Style.chats}
-            contentContainerStyle={{flexDirection: 'column-reverse', justifyContent: "flex-end", flexGrow: 1, alignSelf: "flex-end", paddingBottom: 20 }}
+            contentContainerStyle={{ justifyContent: "flex-end", flexGrow: 1, alignSelf: "flex-end", }}
             data={chat}
             keyExtractor={(item, index) => item.type + index}
             renderItem={({ item, index }) => (
@@ -160,7 +207,7 @@ export default function Chat({ route }) {
                         source={require('../../assets/nia.png')}
                       />
                     )}
-                    {isTyping && chat.length - 1 === index ?
+                    {isTyping && chat.length - 1 === index && item.message.length == 0 ?
                       <View style={Style.typingChat}>
                         <TypingAnimation
                           style={Style.typing}
@@ -184,20 +231,56 @@ export default function Chat({ route }) {
           />}</>
       )}
       <Layout style={Style.chat} level="2">
-        <Input
+        {isTyping && chat[chat.length - 1].message.length == 0 ? <TouchableOpacity style={{
+          flexDirection: "row", alignItems: "center", gap: 5, marginHorizontal: normalize(15),
+
+          borderRadius: 10,
+          borderWidth: 2,
+          borderColor: Theme.color.darkSecondary,
+          paddingHorizontal: normalize(20),
+          paddingVertical: normalize(10)
+        }}
+          onPress={StopQuestion}
+        >
+          <Icon
+            name="square-outline"
+            fill={Theme.color.MediumBlack}
+            style={{ width: normalize(16), height: normalize(24), alignSelf: 'flex-end' }}
+            onPress={() => { setVisible(false) }}
+          />
+          <Text style={{ color: Theme.color.MediumBlack, fontFamily: "Nunito-Bold" }} >
+            Stop Generating
+          </Text>
+        </TouchableOpacity> : <Input
           value={question}
           style={Style.input}
           placeholder="Can you help me write a bedtime story?"
-          accessoryRight={(props) => (<Pressable onPress={()=>{handleNewMessage("")}}>
+          accessoryRight={(props) => (<Pressable onPress={() => { handleNewMessage("") }}>
 
             <Icon style={Style.icon}
               fill={Theme.color.darkSecondary} name="paper-plane-outline" />
           </Pressable>)}
           multiline={true}
           onChangeText={nextValue => setQuestion(nextValue)}
-          onSubmitEditing={()=>{handleNewMessage("")}}
-        />
+          onSubmitEditing={() => { handleNewMessage("") }}
+        />}
       </Layout>
+      <Modal visible={visible} backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <Card disabled={true} style={{ margin: 20 }}>
+          <Icon
+            name="close"
+            fill={Theme.color.MediumBlack}
+            style={{ width: normalize(24), height: normalize(24), alignSelf: 'flex-end' }}
+            onPress={() => { setVisible(false) }}
+          />
+          <Text style={{ textAlign: "center", marginBottom: normalize(16) }}>
+            Let&apos;s ensure we stay connected! Kindly confirm your email address ✅📧.
+          </Text>
+          <Button onPress={handleOpenEmail}>
+            Open Email Box
+          </Button>
+        </Card>
+      </Modal>
     </Layout>
   );
 }
@@ -302,7 +385,7 @@ const Style = StyleSheet.create({
   message: {
     width: SCREEN_WIDTH,
     paddingHorizontal: 10,
-    marginVertical:normalize(10)
+    marginVertical: normalize(10)
   },
   icon: {
     width: normalize(26),

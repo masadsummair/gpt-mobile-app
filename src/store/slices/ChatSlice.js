@@ -15,19 +15,20 @@ export const chatSlice = createSlice({
   reducers: ChatAction,
   extraReducers: builder => {
     builder.addCase(askQuestion.pending, (state, { meta }) => {
-      state.chat[state.selectedThreat][1].push({ message: meta.arg, type: "question" }, { message: "", type: "answer" })
+      state.chat[meta.arg.index][1].push({ message: meta.arg.question, type: "question" }, { message: "", type: "answer" })
       state.isTyping = true;
     });
     builder.addCase(askQuestion.fulfilled, (state, action) => {
       if (action.payload.new) {
-        state.chat[state.selectedThreat][0].id = action.payload.id;
+        state.chat[action.payload.index][0].id = action.payload.id;
       }
-      state.chat[state.selectedThreat][1][state.chat[state.selectedThreat][1].length - 1].message = action.payload.answer;
+      state.chat[action.payload.index][1][state.chat[action.payload.index][1].length - 1].message = action.payload.answer;
       state.isTyping = false;
     });
-    builder.addCase(askQuestion.rejected, (state) => {
+    builder.addCase(askQuestion.rejected, (state,{meta}) => {
       state.isTyping = false;
-      state.chat[state.selectedThreat][1].pop();
+      state.chat[meta.arg.index][1].pop();
+      state.chat[meta.arg.index][1].pop()
     });
     builder.addCase(initChats.pending, (state, { meta }) => {
       state.isLoading = true;

@@ -2,6 +2,7 @@ import { API_URL } from "../utils/constant";
 
 
 async function sendWelcomeEmail(email, url) {
+    console.log(email,url)
     try {
         const response = await fetch(API_URL + '/sendWelcomeEmail', {
             method: 'POST',

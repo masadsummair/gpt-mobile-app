@@ -8,6 +8,7 @@ export const askQuestion = createAsyncThunk(
     'chatSlice/askQuestion',
     async ({ question, index }, { signal, rejectWithValue, dispatch, getState }) => {
         try {
+            console.log(question)
             const { chatSlice: { chat }, userSlice: { user } } = getState();
             let context = [];
             context.push({

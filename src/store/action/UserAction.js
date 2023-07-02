@@ -33,6 +33,7 @@ export const getToken = createAsyncThunk('userSlice/getToken', async (_, { rejec
       };
     }
   } catch (error) {
+    console.log(error)
     return rejectWithValue('Something went worng');
   }
 });
@@ -59,6 +60,7 @@ export const login = createAsyncThunk('userSlice/login', async ({ email, passwor
       };
     }
   } catch (error) {
+    console.log(error)
     let message = 'Something went wrong!';
     if (error.code === 'credential not found') {
       message = 'Please Enter your credentials!';
@@ -103,6 +105,7 @@ export const register = createAsyncThunk(
         };
       }
     } catch (error) {
+      console.log(error)
       let message = 'Something went wrong!';
       if (error.code === 'credential not found') {
         message = 'Please Enter your credentials!';
@@ -132,12 +135,12 @@ export const googleSignIn = createAsyncThunk(
 
       // Sign-in the user with the credential
       const { user } = await auth().signInWithCredential(googleCredential);
-      const {exists} = await firestore().collection('users').doc(user.uid).get();
-      if (exists && user) {
+      const data = await firestore().collection('users').doc(user.uid).get();
+      if (data.exists && user) {
         return {
           isAuthenticated: true,
           user: {
-            id: user.uid, emailVerified: user.emailVerified, firstname: user.displayName?.split(" ")[0], lastname: user.displayName?.split(" ")[1], email: user.email, ...isExist.data()
+            id: user.uid, emailVerified: user.emailVerified, firstname: user.displayName?.split(" ")[0], lastname: user.displayName?.split(" ")[1], email: user.email, ...data.data()
           }
         };
       }
@@ -188,6 +191,7 @@ export const logout = createAsyncThunk(
         user: null
       };
     } catch (error) {
+      console.log(error)
       return rejectWithValue('Something went worng');
     }
   },
@@ -207,6 +211,7 @@ export const onboardingVerification = createAsyncThunk(
       await firestore().collection('users').doc(user.id).set({ verify: true, ...data })
       return data;
     } catch (error) {
+      console.log(error)
       return rejectWithValue("Something went wrong");
     }
   }

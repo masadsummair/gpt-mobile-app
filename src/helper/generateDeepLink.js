@@ -9,7 +9,7 @@ export const generateDeepLink = async () => {
                 packageName: 'com.lenania', // Replace with your Android app package name
             },
         });
-        console.log(link)
+
         return link;
     } catch (error) {
         console.error('Error generating deep link:', error);

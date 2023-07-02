@@ -10,6 +10,7 @@ import Logo from "../../assets/logo.svg";
 import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
 import CustomButton from '../components/Button';
+import AnimatedLottieView from 'lottie-react-native';
 
 
 
@@ -24,29 +25,27 @@ export default function OnBoarding({ navigation }) {
           <Text category="h2" style={Style.title}>
             Support every mom deserves
           </Text>
-          <Text style={Style.text} appearance="hint">
-            Lena&Nia is your go-to source for pregnancy and parenting support.
-            Our experienced midwives and parenting experts are here to answer
-            your questions, help you express your feelings, and provide advice
-            every step of the way. Join our community today!
-          </Text>
-        </View>
-        <View style={Style.avatar}>
-          <Image style={Style.lena} source={require('../../assets/lena.png')} />
-          <Image style={Style.nia} source={require('../../assets/nia.png')} />
         </View>
       </View>
-      <CustomButton
-        onPress={() => {
-          navigation.navigate('Login');
-        }}
-        accessoryRight={<Icon style={Style.icon}
-          fill={Theme.color.white} name="arrow-forward-outline" />}
-        text="Continue"
-      />
+      <AnimatedLottieView source={require("../../assets/mobile-animation.json")} style={{ height: normalize(400) }} autoPlay loop />
+      <View style={Style.buttonGroup} >
+        <CustomButton
+          onPress={() => {
+            navigation.navigate('Register');
+          }}
+          text="Register"
+          backgroundColor={Theme.color.MediumBlack}
+        />
 
-
-
+        <CustomButton
+          onPress={() => {
+            navigation.navigate('Login');
+          }}
+          text="Login"
+          backgroundColor={Theme.color.white}
+          color={Theme.color.MediumBlack}
+        />
+      </View>
     </Layout>
   );
 }
@@ -63,6 +62,12 @@ const Style = StyleSheet.create({
   icon: {
     width: normalize(24),
     height: normalize(24),
+  },
+  buttonGroup:{
+    justifyContent:"center",
+    width:"100%",
+    alignItems:"center",
+    gap:normalize(16),
   },
   header: {
     justifyContent: 'center',

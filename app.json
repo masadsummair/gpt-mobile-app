@@ -25,7 +25,8 @@
         "backgroundColor": "#FBF2EB"
       },
       "googleServicesFile": "./google-services.json",
-      "package": "com.lenania"
+      "package": "com.lenania",
+      "versionCode":1
     },
     "web": {
       "favicon": "./assets/favicon.png"

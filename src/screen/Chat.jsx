@@ -149,7 +149,7 @@ export default function Chat({ route }) {
                   textAlign: 'center',
                   paddingHorizontal: normalize(50),
                 }}>
-                Hi {user.firstname},Nice to meet you!
+                Hi {user.firstname}, Nice to meet you!
               </Text>
             </View>
             <View
@@ -267,7 +267,7 @@ export default function Chat({ route }) {
         </TouchableOpacity> : <Input
           value={question}
           style={Style.input}
-          placeholder="Can you help me write a bedtime story?"
+          placeholder="Write a bedtime story"
           accessoryRight={(props) => (<Pressable onPress={() => { handleNewMessage("") }}>
 
             <Icon style={Style.icon}

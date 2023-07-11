@@ -16,7 +16,9 @@
       "**/*"
     ],
     "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "bundleIdentifier": "com.lenania",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": false
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",

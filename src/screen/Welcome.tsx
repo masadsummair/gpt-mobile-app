@@ -14,14 +14,19 @@ import { normalize } from '../styles/Style';
 import { onboardingVerification } from '../store/action/UserAction';
 import { useDispatch, useSelector } from 'react-redux';
 import Logo from "../../assets/logo.svg";
+import { IWelcomeInfo } from '../store/slices/UserSlice';
+
+
+
 
 export default function Welcome({ navigation }) {
-  const [option, setOption] = useState(0);
-  const [prevOptions, setPrevOptions] = useState(-1);
-  const [week, setWeek] = useState(1);
-  const [dob, setDob] = useState(new Date());
-  const [welcomeInfo, setWelcomeInfo] = useState({
+  const [option, setOption] = useState<number>(0);
+  const [prevOptions, setPrevOptions] = useState<number>(-1);
+  const [week, setWeek] = useState<number>(1);
+  const [dob, setDob] = useState<Date>(new Date());
+  const [welcomeInfo, setWelcomeInfo] = useState<IWelcomeInfo>({
     question1: '',
+    question2: '',
     expert: 'lena',
   });
   const dispatch = useDispatch();
@@ -29,13 +34,14 @@ export default function Welcome({ navigation }) {
     userSlice.user,
   );
   const handleStart = async () => {
-    let question2 = ""
+
     if (welcomeInfo.question1 === 'I am pregnant') {
-      question2 = `week of my pregnancy is ${week}`;
+      setWelcomeInfo((prevState) => ({ ...prevState, question2: `week of my pregnancy is ${week}` }))
     } else {
-      question2 = `birthdate of my child is ${dob.toDateString()}`;
+
+      setWelcomeInfo((prevState) => ({ ...prevState, question2: `birthdate of my child is ${dob.toDateString()}` }))
     }
-    dispatch(onboardingVerification({ ...welcomeInfo, question2 }))
+    dispatch(onboardingVerification(welcomeInfo))
   }
   return (
     <Layout style={Style.container} level="2">
@@ -195,7 +201,7 @@ export default function Welcome({ navigation }) {
               <Text
                 category="c2"
                 style={{ fontSize: normalize(26), textAlign: 'center' }}>
-                Hi {firstname ? firstname : ""  + " " + lastname ? lastname : "" },Nice to meet you!
+                Hi {firstname ? firstname : "" + " " + lastname ? lastname : ""},Nice to meet you!
               </Text>
               <Button
                 onPress={handleStart}

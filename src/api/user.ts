@@ -1,8 +1,9 @@
 import { API_URL } from "../utils/constant";
 
 
-async function sendWelcomeEmail(email, url) {
-    console.log(email,url)
+
+async function sendWelcomeEmail(email: string, url: string): Promise<IAPI_Response> {
+    console.log(email, url)
     try {
         const response = await fetch(API_URL + '/sendWelcomeEmail', {
             method: 'POST',
@@ -20,7 +21,7 @@ async function sendWelcomeEmail(email, url) {
     }
 }
 
-async function sendVerificationEmail(email, url) {
+async function sendVerificationEmail(email: string, url: string): Promise<IAPI_Response> {
     try {
         const response = await fetch(API_URL + '/sendVerificationEmail', {
             method: 'POST',

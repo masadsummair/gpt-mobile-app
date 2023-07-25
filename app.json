@@ -28,7 +28,7 @@
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.lenania",
-      "versionCode":1
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,7 +36,15 @@
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-google-signin/google-signin",
-      "react-native-email-link"
+      "react-native-email-link",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
     ],
     "extra": {
       "eas": {

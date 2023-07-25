@@ -2,16 +2,40 @@ import { createSlice } from '@reduxjs/toolkit';
 import ChatAction, { askQuestion, initChats } from '../action/ChatAction';
 import generateUniqueId from '../../helper/GenerateUniqueId';
 
+export interface IChat {
+  type: string,
+  like?: boolean,
+  message: string
+}
+
+export interface IThreat {
+  0:
+  {
+      id?: string
+  }
+  ;
+  1: IChat[]
+}
+
+export interface IChatSlice {
+  chat: IThreat[];
+  selectedThreat: number;
+  isLoading: boolean;
+  isTyping: boolean;
+}
+
+const initialState: IChatSlice = {
+  chat: [
+    [{ id: generateUniqueId() }, []]
+  ],
+  selectedThreat: 0,
+  isLoading: true,
+  isTyping: false,
+}
+
 export const chatSlice = createSlice({
   name: 'chatSlice',
-  initialState: {
-    chat: [
-      [{ id: generateUniqueId() }, []]
-    ],
-    selectedThreat: 0,
-    isLoading: true,
-    isTyping: false,
-  },
+  initialState,
   reducers: ChatAction,
   extraReducers: builder => {
     builder.addCase(askQuestion.pending, (state, { meta }) => {
@@ -25,7 +49,7 @@ export const chatSlice = createSlice({
       state.chat[action.payload.index][1][state.chat[action.payload.index][1].length - 1].message = action.payload.answer;
       state.isTyping = false;
     });
-    builder.addCase(askQuestion.rejected, (state,{meta}) => {
+    builder.addCase(askQuestion.rejected, (state, { meta }) => {
       state.isTyping = false;
       state.chat[meta.arg.index][1].pop();
       state.chat[meta.arg.index][1].pop()
@@ -35,7 +59,7 @@ export const chatSlice = createSlice({
     });
     builder.addCase(initChats.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.chat=action.payload;
+      state.chat = action.payload;
     });
     builder.addCase(initChats.rejected, (state) => {
       state.isLoading = false;

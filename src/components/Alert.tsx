@@ -10,7 +10,7 @@ import {appSlice} from '../store/slices/AppSlice';
 
 function Alert() {
   const dispatch = useDispatch();
-  const {alert, alertMessage, mode} = useSelector(
+  const {alert, message, mode} = useSelector(
     (state) => state.appSlice,
   );
 
@@ -55,7 +55,7 @@ function Alert() {
                 : Theme.color.Green,
           },
         ]}>
-        {alertMessage + ' '}
+        {message + ' '}
       </Text>
     </Animated.View>
   );

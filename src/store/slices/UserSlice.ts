@@ -2,8 +2,38 @@ import { createSlice } from '@reduxjs/toolkit';
 import userActions, { getToken, googleSignIn, login, logout, onboardingVerification, register } from '../action/UserAction';
 
 
+export interface IUser extends Partial<IWelcomeInfo> {
+    id: string;
+    emailVerified: boolean;
+    firstname: string | null;
+    lastname: string | null;
+    email: string | null;
+    verify?: boolean;
+}
 
-const initialState = {
+export interface IWelcomeInfo {
+    expert: 'lena' | 'nia';
+    question1: string;
+    question2: string;
+}
+
+export interface IUserSlice {
+    user: IUser | null;
+    loading: boolean;
+    isAuthenticated: boolean;
+}
+
+export interface ILoginCredentials {
+    email: string;
+    password: string;
+}
+export interface IRegisterCredentials extends ILoginCredentials {
+    firstName: string;
+    lastName: string;
+    url: string;
+}
+
+const initialState: IUserSlice = {
     user: null,
     loading: false,
     isAuthenticated: false,
@@ -76,7 +106,8 @@ export const userSlice = createSlice({
         });
         builder.addCase(onboardingVerification.fulfilled, (state, action) => {
             state.loading = false;
-            state.user =  {...state.user,verify:true,...action.payload};
+            if (state.user)
+                state.user = { ...state.user, verify: true, ...action.payload };
         });
         builder.addCase(onboardingVerification.rejected, (state) => {
             state.loading = false;
@@ -84,6 +115,6 @@ export const userSlice = createSlice({
     },
 });
 
-export const { AdminOff, AdminOn, AddToCart } = userSlice.actions;
+export const { updateEmailVerifiedStatus } = userSlice.actions;
 
 export default userSlice.reducer;

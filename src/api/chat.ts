@@ -1,7 +1,7 @@
 import { API_URL } from "../utils/constant";
 
 
-async function Generate(context, signal) {
+async function Generate(context, signal): Promise<IAPI_Response> {
     try {
         const response = await fetch(API_URL + "/generate", {
             method: "POST",
@@ -12,11 +12,11 @@ async function Generate(context, signal) {
             signal
         });
         const result = await response.json();
-        if(!result.ok)throw("Something went wrong")
-        return { status: true,  result:result.result }
+        if (!result.ok) throw ("Something went wrong")
+        return { status: true, result: result.result }
     } catch (error) {
         console.log(error)
-        return { status: false,error }
+        return { status: false, error }
     }
 }
 

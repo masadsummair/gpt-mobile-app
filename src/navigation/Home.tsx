@@ -36,7 +36,6 @@ const Drawer = createDrawerNavigator<HomeDrawerParamList>();
 
 export interface IChatNavigationItems { name: ChatItemName; chatItem: IThreat }
 
-
 function generateChatNavigationItems(chatData: IThreat[]): IChatNavigationItems[] {
   return chatData.map((chatItem, index) => ({
     name: `chat-${index}` as ChatItemName,
@@ -64,7 +63,6 @@ function DrawerNavigation({ chatNavigationItems }: { chatNavigationItems: IChatN
     dispatch(initChats());
 
   }, []);
-
 
 
   return (

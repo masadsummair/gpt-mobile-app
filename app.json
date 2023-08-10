@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "lenania",
+    "slug": "lenania",
+    "scheme": "lenania",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/lena.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FBF2EB"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.lenania",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": false
+    },
+    "android": {
+      "softwareKeyboardLayoutMode": "pan",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon-1.png",
+        "backgroundColor": "#FBF2EB"
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.lenania",
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-google-signin/google-signin",
+      "react-native-email-link",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d83bdb32-e4ba-4231-b655-881084cc4382"
+      }
+    }
+  }
+}

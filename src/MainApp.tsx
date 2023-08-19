@@ -7,7 +7,7 @@ import { getToken } from "./store/action/UserAction";
 import Loader from "./components/Loader";
 import { RootState, useAppDispatch, useAppSelector } from "./store/Store";
 
-export default function MainApp() {
+export default function MainApp(): JSX.Element {
   const { loading, isAuthenticated } = useAppSelector(
     (state: RootState) => state.userSlice,
   );

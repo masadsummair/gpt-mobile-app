@@ -1,7 +1,8 @@
+import { IContext } from "../store/action/ChatAction";
 import { API_URL } from "../utils/constant";
 
 
-async function Generate(context, signal): Promise<IAPI_Response> {
+async function Generate(context: IContext[], signal: AbortSignal): Promise<IAPI_Response> {
     try {
         const response = await fetch(API_URL + "/generate", {
             method: "POST",

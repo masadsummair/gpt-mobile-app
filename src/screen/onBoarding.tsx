@@ -11,11 +11,12 @@ import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
 import CustomButton from '../components/Button';
 import AnimatedLottieView from 'lottie-react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '../navigation/Auth';
 
+type Props = NativeStackScreenProps<AuthStackParamList, 'OnBoarding'>;
 
-
-
-export default function OnBoarding({ navigation }) {
+export default function OnBoarding({ navigation }: Props) {
   return (
     <Layout style={Style.container} level="2">
       <View style={Style.header}>
@@ -63,11 +64,11 @@ const Style = StyleSheet.create({
     width: normalize(24),
     height: normalize(24),
   },
-  buttonGroup:{
-    justifyContent:"center",
-    width:"100%",
-    alignItems:"center",
-    gap:normalize(16),
+  buttonGroup: {
+    justifyContent: "center",
+    width: "100%",
+    alignItems: "center",
+    gap: normalize(16),
   },
   header: {
     justifyContent: 'center',

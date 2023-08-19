@@ -4,15 +4,21 @@ import React, { useState } from 'react';
 import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
 import { googleSignIn, login } from '../store/action/UserAction';
-import { useDispatch } from 'react-redux';
+
 import { appSlice } from '../store/slices/AppSlice';
 import CustomButton from '../components/Button';
 import { generateDeepLink } from '../helper/generateDeepLink';
+import { useAppDispatch } from '../store/Store';
+import { AuthStackParamList } from '../navigation/Auth';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export default function Login({ navigation }) {
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+
+export default function Login({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handleLogin = async () => {
     Keyboard.dismiss();
     if (email.length <= 0) {
@@ -25,7 +31,8 @@ export default function Login({ navigation }) {
   }
   const onGoogleButtonPress = async () => {
     const url = await generateDeepLink();
-    dispatch(googleSignIn({ url }));
+    if (url)
+      dispatch(googleSignIn({ url }));
   }
   return (
     <Layout style={Style.container} level="2">

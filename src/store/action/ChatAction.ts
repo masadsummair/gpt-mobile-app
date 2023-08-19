@@ -6,7 +6,10 @@ import { chatApi } from '../../api/chat';
 import { IChatSlice, IThreat } from '../slices/ChatSlice';
 import { RootState } from '../Store';
 
-
+export interface IContext {
+    role: string
+    content: string
+}
 export const askQuestion = createAsyncThunk<
     {
         new: boolean,
@@ -20,9 +23,10 @@ export const askQuestion = createAsyncThunk<
 
     try {
 
+        const controller = new AbortController();
         const { chatSlice: { chat }, userSlice: { user } } = getState();
         if (!user) throw ("User not found")
-        let context = [];
+        let context: IContext[] = [];
         context.push({
             "role": "system",
             "content": "You are AI-powered parenting and pregnancy assistant and specialize in answering questions related to parenting and pregnancy topics only, such as child development, pregnancy symptoms, breastfeeding, and more.You can only answer questions related to parenting and pregnancy topics only and use emojis to create a friendly and relatable connection with the user."
@@ -43,7 +47,7 @@ export const askQuestion = createAsyncThunk<
 
         }
         context.push({ "role": "user", "content": `${question}.` })
-        const { status, result, error } = await chatApi.Generate(context, signal)
+        const { status, result, error } = await chatApi.Generate(context, controller.signal)
         if (!status) throw (error)
         if (chat[index][1].slice(0, -2).length == 0) {
 

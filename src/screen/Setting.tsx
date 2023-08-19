@@ -9,10 +9,11 @@ import {
   Button
 } from '@ui-kitten/components';
 import { logout } from '../store/action/UserAction';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../store/Store';
+
 
 export default function Setting() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handleLogOut = async () => {
     dispatch(logout());
   }

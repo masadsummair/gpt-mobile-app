@@ -1,16 +1,16 @@
 import React, {useEffect} from 'react';
 import {Text, StyleSheet} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
 import Animated, {ZoomInEasyUp, ZoomOutEasyUp} from 'react-native-reanimated';
 
 import Theme from '../styles/Theme';
 import {normalize} from '../styles/Style';
 import {appSlice} from '../store/slices/AppSlice';
+import { useAppDispatch, useAppSelector } from '../store/Store';
 
 
 function Alert() {
-  const dispatch = useDispatch();
-  const {alert, message, mode} = useSelector(
+  const dispatch = useAppDispatch();
+  const {alert, message, mode} = useAppSelector(
     (state) => state.appSlice,
   );
 

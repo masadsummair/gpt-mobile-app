@@ -7,10 +7,23 @@ import Reanimated, {
 import { normalize } from "../styles/Style";
 import Theme from "../styles/Theme";
 import GoogleIcon from "./googleIcon";
+import { ReactNode } from "react";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-function CustomButton({ text, GoogleIconLeft,fontSize=18,accessoryLeft, width = "80%", color = Theme.color.white, backgroundColor = Theme.color.darkSecondary, accessoryRight, onPress }) {
+export interface ICustomButton {
+  text: string,
+  GoogleIconLeft?: boolean,
+  fontSize?: number,
+  width?: string,
+  color?: string,
+  backgroundColor?: string,
+  accessoryRight?: ReactNode,
+  accessoryLeft?: ReactNode,
+  onPress: any
+}
+
+function CustomButton({ text, GoogleIconLeft, fontSize = 18, accessoryLeft, width = "80%", color = Theme.color.white, backgroundColor = Theme.color.darkSecondary, accessoryRight, onPress }: ICustomButton) {
   //animation
   const down = useSharedValue(0);
   const buttonAnimationStyle = useAnimatedStyle(() => {
@@ -37,11 +50,13 @@ function CustomButton({ text, GoogleIconLeft,fontSize=18,accessoryLeft, width = 
         buttonAnimationStyle
       ]}
     >
-      {GoogleIconLeft?<GoogleIcon />:null}
-      <Text style={[Style.textWithBackground, { color,fontSize: normalize(fontSize), }]}>
+      {GoogleIconLeft ? <GoogleIcon /> : null}
+      {accessoryLeft ? accessoryLeft : null}
+      <Text style={[Style.textWithBackground, { color, fontSize: normalize(fontSize), }]}>
         {text}
       </Text>
-      {accessoryRight?accessoryRight:null}
+      {accessoryRight ? accessoryRight : null}
+
     </ReanimatedPressable>
   );
 }

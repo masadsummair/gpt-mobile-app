@@ -165,7 +165,7 @@ export const googleSignIn = createAsyncThunk<
     // Sign-in the user with the credential
     const { user } = await auth().signInWithCredential(googleCredential);
 
-    if (user) {
+    if (user && user.email) {
       const data = await firestore().collection('users').doc(user.uid).get();
       const displayNameArray = user.displayName?.split(" ") || [];
       if (data.exists) {

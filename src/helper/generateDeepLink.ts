@@ -1,6 +1,6 @@
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
-export const generateDeepLink = async () => {
+export const generateDeepLink = async (): Promise<string | null> => {
     try {
         const link = await dynamicLinks().buildShortLink({
             link: 'https://lenania.com', // Replace with your web app confirmation URL

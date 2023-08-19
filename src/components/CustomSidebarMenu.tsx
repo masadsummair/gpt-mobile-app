@@ -15,16 +15,16 @@ import {
 import { Icon, Text } from '@ui-kitten/components';
 import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
-import { useDispatch, useSelector } from 'react-redux';
 import { chatSlice } from '../store/slices/ChatSlice';
 import Logo from "../../assets/logo-white.svg";
 import { logout } from '../store/action/UserAction';
+import { useAppDispatch, useAppSelector } from '../store/Store';
 export default function CustomSidebarMenu({ navigation, ...props }) {
   const toggleDrawer = () => {
     navigation.toggleDrawer();
   };
-  const dispatch = useDispatch();
-  const { chat } = useSelector(({ chatSlice }) => chatSlice);
+  const dispatch = useAppDispatch();
+  const { chat } = useAppSelector(({ chatSlice }) => chatSlice);
   const handleLogOut = async () => {
     dispatch(logout());
   }

@@ -3,18 +3,22 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
-import { useDispatch } from 'react-redux';
 import { appSlice } from '../store/slices/AppSlice';
 import { googleSignIn, register } from '../store/action/UserAction';
 import CustomButton from '../components/Button';
 import { generateDeepLink } from '../helper/generateDeepLink';
+import { useAppDispatch } from '../store/Store';
+import { AuthStackParamList } from '../navigation/Auth';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export default function Register({ navigation }) {
+type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
+
+export default function Register({ navigation }: Props) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handlRegister = async () => {
     Keyboard.dismiss();
     if (firstName.length <= 0 || lastName.length <= 0) {
@@ -25,12 +29,14 @@ export default function Register({ navigation }) {
       dispatch(appSlice.actions.setAlert({ message: 'Password to short' }));
     } else {
       const url = await generateDeepLink();
-      dispatch(register({ firstName, lastName, email, password, url }));
+      if (url)
+        dispatch(register({ firstName, lastName, email, password, url }));
     }
   };
   const onGoogleButtonPress = async () => {
     const url = await generateDeepLink();
-    dispatch(googleSignIn({ url }));
+    if (url)
+      dispatch(googleSignIn({ url }));
   }
   return (
     <Layout style={Style.container} level="2">

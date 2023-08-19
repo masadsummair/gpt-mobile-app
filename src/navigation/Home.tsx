@@ -7,29 +7,58 @@ import CustomSidebarMenu from '../components/CustomSidebarMenu';
 import Theme from '../styles/Theme';
 import { StatusBar } from 'react-native';
 import { useNavigationState } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from '@ui-kitten/components';
 import Setting from '../screen/Setting';
 import { createStackNavigator } from '@react-navigation/stack';
 import Welcome from '../screen/Welcome';
 import { initChats } from '../store/action/ChatAction';
+import { useAppDispatch, useAppSelector } from '../store/Store';
+import { IThreat } from '../store/slices/ChatSlice';
+import Loader from '../components/Loader';
 
+export type ChatItemName = `chat-${number}`;
 
-const Drawer = createDrawerNavigator();
-function DrawerNavigation() {
-  const navigationState = useNavigationState((state) => state);
+export type ChatRouteParams = {
+  chatItem: IThreat;
+};
+
+export type HomeDrawerParamList = {
+  Home: undefined;
+  Setting: undefined;
+} & { [key in ChatItemName]: ChatRouteParams };
+
+type HistoryEntry = {
+  type: string; // Replace 'string' with the actual type of 'type'
+  status: string; // Replace 'string' with the actual type of 'status'
+};
+
+const Drawer = createDrawerNavigator<HomeDrawerParamList>();
+
+export interface IChatNavigationItems { name: ChatItemName; chatItem: IThreat }
+
+function generateChatNavigationItems(chatData: IThreat[]): IChatNavigationItems[] {
+  return chatData.map((chatItem, index) => ({
+    name: `chat-${index}` as ChatItemName,
+    chatItem,
+  }));
+}
+
+function DrawerNavigation({ chatNavigationItems }: { chatNavigationItems: IChatNavigationItems[] }) {
+  const navigationState = useNavigationState((state) => state as { history: HistoryEntry[]; });
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (navigationState && navigationState.history) {
       setIsDrawerOpen(
-        navigationState.history?.some(
+        navigationState.history.some(
           (route) => route.type === 'drawer' && route.status === 'open',
         ),
       );
     }
   }, [navigationState]);
-  const chat = useSelector(({ chatSlice }) => chatSlice);
+  const chat = useAppSelector(({ chatSlice }) => chatSlice.chat);
   useEffect(() => {
     dispatch(initChats());
 
@@ -75,15 +104,14 @@ function DrawerNavigation() {
         }}
         drawerContent={(props) => <CustomSidebarMenu {...props} />}
         initialRouteName="Home">
-        {chat.chat.map((item, index) => (
+        {chatNavigationItems.map(({ name, chatItem }, index) => (
           <Drawer.Screen
             key={index}
-            name={'chat-' + index}
-            label={
-              item[1][0] && item[1][0].message
-                ? item[1][0].message.substr(0, 30) + '...'
-                : 'This chat'
-            }
+            name={name}
+            options={({ route }) => ({
+              drawerLabel: chat[1][1][0].message ? `${chat[1][1][0].message.substring(0, 30)}...` : 'This chat',
+              // Customize other screen options as needed...
+            })}
             component={Chat}
           />
         ))}
@@ -92,7 +120,14 @@ function DrawerNavigation() {
     </>
   );
 }
-const Stack = createStackNavigator();
+
+export type WelcomeStackParamList = {
+  Welcome: undefined;
+};
+
+const Stack = createStackNavigator<WelcomeStackParamList>();
+
+
 function WelcomeStack() {
   return (
     <Stack.Navigator
@@ -106,12 +141,30 @@ function WelcomeStack() {
 }
 
 export default function Home() {
-  const { verify } = useSelector(({ userSlice }) =>
-    userSlice.user,
+  const { verify } = useAppSelector(({ userSlice }) =>
+    ({ verify: userSlice.user, loading: userSlice.loading, isAuthenticated: userSlice.isAuthenticated }),
   );
+
+  const chat = useAppSelector(({ chatSlice }) => chatSlice.chat);
+  const dispatch = useAppDispatch();
+  const [isChatInitialized, setIsChatInitialized] = useState(false);
+
+  useEffect(() => {
+    dispatch(initChats()).then(() => {
+      setIsChatInitialized(true);
+    });
+  }, []);
+
   if (verify) {
-    return (<DrawerNavigation />);
+    if (!isChatInitialized || chat === undefined) {
+      // Add a loading state or placeholder here while the chat data is being initialized
+      return <Loader />;
+    }
+
+    const chatNavigationItems = generateChatNavigationItems(chat);
+
+    return <DrawerNavigation chatNavigationItems={chatNavigationItems} />;
   } else {
-    return <WelcomeStack />
+    return <WelcomeStack />;
   }
 }

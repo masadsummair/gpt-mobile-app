@@ -12,14 +12,16 @@ import React, { useState } from 'react';
 import Theme from '../styles/Theme';
 import { normalize } from '../styles/Style';
 import { onboardingVerification } from '../store/action/UserAction';
-import { useDispatch, useSelector } from 'react-redux';
 import Logo from "../../assets/logo.svg";
 import { IWelcomeInfo } from '../store/slices/UserSlice';
+import { useAppDispatch, useAppSelector } from '../store/Store';
+import { WelcomeStackParamList } from '../navigation/Home';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 
+type Props = NativeStackScreenProps<WelcomeStackParamList, 'Welcome'>;
 
-
-export default function Welcome({ navigation }) {
+export default function Welcome({ navigation }: Props) {
   const [option, setOption] = useState<number>(0);
   const [prevOptions, setPrevOptions] = useState<number>(-1);
   const [week, setWeek] = useState<number>(1);
@@ -29,10 +31,13 @@ export default function Welcome({ navigation }) {
     question2: '',
     expert: 'lena',
   });
-  const dispatch = useDispatch();
-  const { firstname, lastname } = useSelector(({ userSlice }) =>
-    userSlice.user,
-  );
+  const dispatch = useAppDispatch();
+  const { firstname, lastname } = useAppSelector(({ userSlice }) => {
+    if (userSlice.user) {
+      return userSlice.user;
+    }
+    return { firstname: null, lastname: null };
+  });
   const handleStart = async () => {
 
     if (welcomeInfo.question1 === 'I am pregnant') {
@@ -49,7 +54,7 @@ export default function Welcome({ navigation }) {
       <View style={Style.section}>
         {option === 0 && (
           <Text category="h3" style={Style.text}>
-            Welcome {"\n"} {firstname ? firstname : "" + " " + lastname ? lastname : ""}
+            Welcome {"\n"} {firstname ?? "" + " " + lastname ?? ""}
           </Text>
         )}
 
@@ -201,7 +206,7 @@ export default function Welcome({ navigation }) {
               <Text
                 category="c2"
                 style={{ fontSize: normalize(26), textAlign: 'center' }}>
-                Hi {firstname ? firstname : "" + " " + lastname ? lastname : ""},Nice to meet you!
+                Hi {firstname ??  "" + " " + lastname ??  ""},Nice to meet you!
               </Text>
               <Button
                 onPress={handleStart}
@@ -332,9 +337,5 @@ const Style = StyleSheet.create({
   selectAvatar: {
     width: normalize(160),
     height: normalize(160),
-  },
-  icon: {
-    width: normalize(26),
-    height: normalize(26),
-  },
+  }
 });

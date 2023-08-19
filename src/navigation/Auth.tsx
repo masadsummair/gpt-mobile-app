@@ -2,12 +2,19 @@ import React from 'react';
 import Register from '../screen/Register';
 import Login from '../screen/login';
 import OnBoarding from '../screen/onBoarding';
-import Welcome from '../screen/Welcome';
-import Chat from '../screen/Chat';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 
-const Stack = createStackNavigator();
+export type AuthStackParamList = {
+  OnBoarding: undefined;
+  Login: undefined;
+  Register: undefined;
+  Welcome: undefined;
+
+};
+
+const Stack = createStackNavigator<AuthStackParamList>();
+
 
 export default function AuthStack() {
   return (
@@ -24,7 +31,6 @@ export default function AuthStack() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="OnBoarding" component={OnBoarding} />
-        <Stack.Screen name="Welcome" component={Welcome} />
       </Stack.Navigator></>
   );
 }

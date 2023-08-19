@@ -9,12 +9,11 @@ import {
   Button
 } from '@ui-kitten/components';
 import { FlatList, Keyboard, Pressable, ScrollView, StyleSheet } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, RefObject } from 'react';
 import { SCREEN_WIDTH, normalize } from '../styles/Style';
 import { Image } from 'react-native';
 import { View } from 'react-native';
 import Theme from '../styles/Theme';
-import { useDispatch, useSelector } from 'react-redux';
 import { TypingAnimation } from 'react-native-typing-animation';
 import { askQuestion } from '../store/action/ChatAction';
 import { openInbox } from "react-native-email-link";
@@ -24,22 +23,30 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { userSlice } from '../store/slices/UserSlice';
 import { userApi } from '../api/user';
 import { generateDeepLink } from '../helper/generateDeepLink';
+import { useAppDispatch, useAppSelector } from '../store/Store';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ChatItemName, ChatRouteParams, HomeDrawerParamList } from '../navigation/Home';
+import { IChat } from '../store/slices/ChatSlice';
+import Loader from '../components/Loader';
 
-export default function Chat({ route }) {
-  const { chat, isTyping, selectedThreat } = useSelector(({ chatSlice }) =>
-    ({ chat: chatSlice.chat.find((item, index) => route.name === 'chat-' + index)[1], isTyping: chatSlice.isTyping, selectedThreat: chatSlice.selectedThreat })
-  );
-  const user = useSelector(({ userSlice }) =>
-    userSlice.user
-  );
-  const abortControllerRef = useRef(null);
+type Props = NativeStackScreenProps<HomeDrawerParamList, ChatItemName>;
+
+export default function Chat({ route }: Props) {
+  const { chat, isTyping, selectedThreat } = useAppSelector(({ chatSlice }) => ({
+    chat: chatSlice.chat.find((item, index) => route.name === 'chat-' + index),
+    isTyping: chatSlice.isTyping,
+    selectedThreat: chatSlice.selectedThreat,
+  }));
+  // chat.find((item, index) => route.name === 'chat-' + index)[1]
+  const user = useAppSelector(({ userSlice }) => userSlice.user);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const [visible, setVisible] = useState(false);
   const [question, setQuestion] = useState('');
-  const dispatch = useDispatch();
-  const chatRef = useRef();
-  const handleNewMessage = async (message) => {
-    if(!user || visible)
-    {
+  const dispatch = useAppDispatch();
+  const chatRef = useRef<FlatList<IChat> | null>(null);
+  const handleNewMessage = async (message: string) => {
+    if (!user || visible) {
       return;
     }
     Keyboard.dismiss();
@@ -62,33 +69,52 @@ export default function Chat({ route }) {
     }
 
 
-    const questionToSend = message || question;
+    const questionToSend = message.length ? message : question;
     if (!questionToSend || questionToSend.length === 0) {
       return;
     }
-    abortControllerRef.current = dispatch(askQuestion({ question: questionToSend, index: selectedThreat }));
-    setQuestion("");
+    try {
+      const actionResult = await dispatch(askQuestion({ question: questionToSend, index: selectedThreat }));
+      if (!actionResult.payload) {
+        // Handle the case when actionResult.payload is falsy
+        return;
+      }
 
-    scrollTobBottom();
+      const { new: isNewQuestion, id, index, answer } = actionResult.payload;
+      if (isNewQuestion) {
+        // Set the AbortController for the new question
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+      } else {
+        // For an existing question, you may or may not update the AbortController,
+        // depending on your application's logic.
+      }
+
+      setQuestion("");
+      scrollTobBottom();
+    } catch (error) {
+      // Handle the error here if needed
+      console.error(error);
+    }
   };
 
   const scrollTobBottom = () => {
-    chatRef.current?.scrollToEnd();
+    (chatRef.current as any)?.scrollToEnd();
   };
   const handleOpenEmail = () => {
-    openInbox({ title: `Login link sent to ${user.email}`, message: 'Open my mailbox' });
+    openInbox({ title: `Login link sent to ${user?.email}`, message: 'Open my mailbox' });
     setVisible(false);
   };
   useEffect(() => {
-    scrollTobBottom()
+    scrollTobBottom();
 
     return () => {
       if (abortControllerRef.current) {
         // Abort the current request
         abortControllerRef.current.abort();
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const checkEmailVerified = async () => {
     const user = auth().currentUser;
@@ -96,12 +122,13 @@ export default function Chat({ route }) {
     if (!user) {
       return false;
     }
-    const previousEmailVerifiedStatus=user.emailVerified;
+    const previousEmailVerifiedStatus = user.emailVerified;
     await user.reload();
 
     if (!previousEmailVerifiedStatus && user.emailVerified) {
       const url = await generateDeepLink();
-      await userApi.sendWelcomeEmail(user.email, url);
+      if (url)
+        await userApi.sendWelcomeEmail(user.email ?? "", url);
     }
 
     return user.emailVerified;
@@ -111,10 +138,64 @@ export default function Chat({ route }) {
       abortControllerRef.current.abort();
     }
   }
+
+  const renderItem = ({ item, index }: { item: IChat; index: number }) => {
+    if (item.type === 'question') {
+      return (
+        <View style={Style.message}>
+          <View style={Style.rightChat}>
+            <Text selectable>{item.message}</Text>
+          </View>
+        </View>
+      );
+    } else {
+      return (
+        <View style={Style.message}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            {user?.expert === 'lena' ? (
+              <Image
+                style={Style.messageAvatar}
+                source={require('../../assets/lena.png')}
+              />
+            ) : (
+              <Image
+                style={Style.messageAvatar}
+                source={require('../../assets/nia.png')}
+              />
+            )}
+            {isTyping && chat && chat[1].length - 1 === index && item.message.length === 0 ? (
+              <View style={Style.typingChat}>
+                <TypingAnimation
+                  dotColor="black"
+                  dotMargin={6}
+                  dotAmplitude={3}
+                  dotSpeed={0.15}
+                  dotRadius={3}
+                  dotX={10}
+                  dotY={10}
+                />
+              </View>
+            ) : (
+              <View style={Style.leftChat}>
+                <Text style={{ color: Theme.color.MediumBlack }} selectable>
+                  {item.message}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      );
+    }
+  };
+
+  if (!chat) {
+    // Return a loading component or placeholder here when chat data is not available yet.
+    return <Loader />;
+  }
   return (
     <Layout style={Style.container} level="2">
 
-      {!chat || (chat && chat.length === 0) ? (
+      {!chat || (chat && chat[1].length === 0) ? (
         <ScrollView style={{ flex: 1, width: '100%' }}>
           <View
             style={{
@@ -131,7 +212,7 @@ export default function Chat({ route }) {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              {user.expert === 'lena' ? (
+              {user?.expert === 'lena' ? (
                 <Image
                   style={Style.selectAvatar}
                   source={require('../../assets/lena.png')}
@@ -149,7 +230,7 @@ export default function Chat({ route }) {
                   textAlign: 'center',
                   paddingHorizontal: normalize(50),
                 }}>
-                Hi {user.firstname}, Nice to meet you!
+                Hi {user?.firstname ?? ""}, Nice to meet you!
               </Text>
             </View>
             <View
@@ -199,52 +280,13 @@ export default function Chat({ route }) {
             ref={chatRef}
             style={Style.chats}
             contentContainerStyle={{ justifyContent: "flex-end", flexGrow: 1, alignSelf: "flex-end", }}
-            data={chat}
+            data={chat[1]}
             keyExtractor={(item, index) => item.type + index}
-            renderItem={({ item, index }) => (
-              <View style={Style.message}>
-                {item.type === 'question' ? (
-                  <View style={Style.rightChat}>
-                    <Text selectable>{item.message}</Text>
-                  </View>
-                ) : (
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
-                    {user.expert === 'lena' ? (
-                      <Image
-                        style={Style.messageAvatar}
-                        source={require('../../assets/lena.png')}
-                      />
-                    ) : (
-                      <Image
-                        style={Style.messageAvatar}
-                        source={require('../../assets/nia.png')}
-                      />
-                    )}
-                    {isTyping && chat.length - 1 === index && item.message.length == 0 ?
-                      <View style={Style.typingChat}>
-                        <TypingAnimation
-                          style={Style.typing}
-                          dotColor="black"
-                          dotMargin={6}
-                          dotAmplitude={3}
-                          dotSpeed={0.15}
-                          dotRadius={3}
-                          dotX={10}
-                          dotY={10}
-                        />
-                      </View> : <View style={Style.leftChat}>
-                        <Text style={{ color: Theme.color.MediumBlack }} selectable>
-                          {item.message}
-                        </Text>
-                      </View>}
-                  </View>
-                )}
-              </View>
-            )}
+            renderItem={renderItem}
           />}</>
       )}
       <Layout style={Style.chat} level="2">
-        {isTyping && chat[chat.length - 1].message.length == 0 ? <TouchableOpacity style={{
+        {isTyping && chat && chat[1][chat[1].length - 1].message.length == 0 ? <TouchableOpacity style={{
           flexDirection: "row", alignItems: "center", gap: 5, marginHorizontal: normalize(15),
 
           borderRadius: 10,

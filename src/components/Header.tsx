@@ -3,11 +3,15 @@ import { normalize } from '../styles/Style';
 import { Icon } from '@ui-kitten/components';
 import React from 'react';
 import Theme from '../styles/Theme';
-import { useDispatch } from 'react-redux';
+
 import { chatSlice } from '../store/slices/ChatSlice';
 import Logo from "../../assets/logo.svg";
-export default function Header({ navigation }) {
-  const dispatch=useDispatch();
+import { useAppDispatch } from '../store/Store';
+import { DrawerHeaderProps } from '@react-navigation/drawer';
+
+
+export default function Header({ navigation }:DrawerHeaderProps) {
+  const dispatch=useAppDispatch();
   return (
     <View style={Style.header}>
       <Pressable

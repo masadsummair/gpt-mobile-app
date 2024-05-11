@@ -74,7 +74,6 @@ export const askQuestion = createAsyncThunk<
         }
 
     } catch (error: any) {
-        console.log(error)
         if (error.name === 'AbortError') {
             return rejectWithValue('cancelled');
         }

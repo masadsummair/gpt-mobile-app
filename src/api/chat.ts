@@ -16,7 +16,7 @@ async function Generate(context: IContext[], signal: AbortSignal): Promise<IAPI_
         if (!result.ok) throw ("Something went wrong")
         return { status: true, result: result.result }
     } catch (error) {
-        console.log(error)
+
         return { status: false, error }
     }
 }

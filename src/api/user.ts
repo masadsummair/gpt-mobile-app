@@ -3,7 +3,6 @@ import { API_URL } from "../utils/constant";
 
 
 async function sendWelcomeEmail(email: string, url: string): Promise<IAPI_Response> {
-    console.log(email, url)
     try {
         const response = await fetch(API_URL + '/sendWelcomeEmail', {
             method: 'POST',
@@ -16,7 +15,6 @@ async function sendWelcomeEmail(email: string, url: string): Promise<IAPI_Respon
         if (!result.ok) throw ("Email was not send")
         return { status: true }
     } catch (error) {
-        console.log(error)
         return { status: false }
     }
 }
@@ -33,7 +31,6 @@ async function sendVerificationEmail(email: string, url: string): Promise<IAPI_R
         if (!result.ok) throw ("Email was not send")
         return { status: true }
     } catch (error) {
-        console.log(error)
         return { status: false }
     }
 }

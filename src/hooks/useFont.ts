@@ -21,7 +21,7 @@ export function useFont() {
       } catch (loadCachedResourcesError) {
         console.log(loadCachedResourcesError);
       } finally {
-        console.log("loaded")
+
         setLoadingComplete(true);
         await SplashScreen.hideAsync();
       }

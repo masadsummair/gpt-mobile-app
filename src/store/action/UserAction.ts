@@ -47,7 +47,7 @@ export const getToken = createAsyncThunk<
       };
     }
   } catch (error) {
-    console.log(error)
+
     return rejectWithValue('Something went worng');
   }
 });
@@ -130,7 +130,7 @@ export const register = createAsyncThunk<
       };
     }
   } catch (error: any) {
-    console.log(error)
+
     let message = 'Something went wrong!';
     if (error.code === 'credential not found') {
       message = 'Please Enter your credentials!';
@@ -203,7 +203,7 @@ export const googleSignIn = createAsyncThunk<
     }
 
   } catch (error: any) {
-    console.log(error)
+
     let message = 'Something went wrong!';
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
       // user cancelled the login flow
@@ -227,14 +227,13 @@ export const logout = createAsyncThunk<
 >('userSlice/logout', async (_, { rejectWithValue }) => {
   try {
     await auth().signOut();
-    console.log('User signed out!');
+
     await GoogleSignin.signOut();
     return {
       isAuthenticated: false,
       user: null
     };
   } catch (error) {
-    console.log(error)
     return rejectWithValue('Something went worng');
   }
 },
@@ -259,7 +258,6 @@ export const onboardingVerification = createAsyncThunk<
     await firestore().collection('users').doc(user.id).set({ verify: true, ...data })
     return data;
   } catch (error) {
-    console.log(error)
     return rejectWithValue("Something went wrong");
   }
 }

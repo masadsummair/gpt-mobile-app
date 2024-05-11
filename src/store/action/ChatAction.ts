@@ -29,7 +29,7 @@ export const askQuestion = createAsyncThunk<
         let context: IContext[] = [];
         context.push({
             "role": "system",
-            "content": "You are AI-powered parenting and pregnancy assistant and specialize in answering questions related to parenting and pregnancy topics only, such as child development, pregnancy symptoms, breastfeeding, and more.You can only answer questions related to parenting and pregnancy topics only and use emojis to create a friendly and relatable connection with the user."
+            "content": "You are AI-powered parenting and pregnancy assistant and specialize in answering questions related to {TOPIC} topics only and use emojis to create a friendly and relatable connection with the user."
         });
         context.push({ "role": "user", "content": "My name is " + user?.firstname + " " + user?.lastname + "." + user?.question1 + " and " + user?.question2 + ".Who are you?" })
         context.push({ "role": "assistant", "content": "My name is " + user?.expert + " created by Lena&Nia." })

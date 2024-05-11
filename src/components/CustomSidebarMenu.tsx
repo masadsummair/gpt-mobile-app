@@ -98,7 +98,7 @@ export default function CustomSidebarMenu({ navigation, ...props }) {
             <Text style={Style.BottomDrawerText}>Support</Text>
           </View>
         )}
-        onPress={() => Linking.openURL('https://lenania.com/contact')}
+        onPress={() => Linking.openURL('https://appName.com/contact')}
       />
       <DrawerItem
         style={Style.BottomDrawer}

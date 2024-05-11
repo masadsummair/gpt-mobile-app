@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "lenania",
-    "slug": "lenania",
-    "scheme": "lenania",
+    "name": "appName",
+    "slug": "appName",
+    "scheme": "appName",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/lena.png",
@@ -16,7 +16,7 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.lenania",
+      "bundleIdentifier": "com.appName",
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": false
     },
@@ -27,7 +27,7 @@
         "backgroundColor": "#FBF2EB"
       },
       "googleServicesFile": "./google-services.json",
-      "package": "com.lenania",
+      "package": "com.appName",
       "versionCode": 1
     },
     "web": {
